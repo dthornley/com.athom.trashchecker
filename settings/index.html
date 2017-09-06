@@ -284,7 +284,66 @@
     </fieldset>
 	<button id="manualInput" class="left" style="display:block" data-i18n="settings.saveManualInput" ></button>
 	<br /><br />
-
+	
+	<h2 data-i18n="settings.labeltitle"></h2>
+    <p style="display:block" data-i18n="settings.labeldescription"></p>
+	<fieldset id="label_input">
+		<div class="field row">
+			<label style="float:left" for="labelTimeIndicator" data-i18n="settings.timeindicator"></label>
+			<div style="float:left">
+				<select name="labelDay" id="labelTimeIndicator">
+					<option value="0" data-i18n="speech.output.timeindicator.t0"></option>
+					<option value="1" data-i18n="speech.output.timeindicator.t1"></option>
+					<option value="2" data-i18n="speech.output.timeindicator.t2"></option>
+				</select>
+			</div>
+        </div>
+		<div class="field row">
+			<label style="float:left" for="labelGft" data-i18n="settings.gft"></label>
+			<div style="float:left">
+				<input type="text" id="labelGft" name="label[gft]" />
+			</div>
+        </div>
+		<div class="field row">
+			<label style="float:left" for="labelRest" data-i18n="settings.rest"></label>
+			<div style="float:left">
+				<input type="text" id="labelRest" name="label[rest]" />
+			</div>
+        </div>
+		<div class="field row">
+			<label style="float:left" for="labelPapier" data-i18n="settings.paper"></label>
+			<div style="float:left">
+				<input type="text" id="labelPapier" name="label[papier]" />
+			</div>
+        </div>
+		<div class="field row">
+			<label style="float:left" for="labelPlastic" data-i18n="settings.plastic"></label>
+			<div style="float:left">
+				<input type="text" id="labelPlastic" name="label[plastic]" />
+			</div>
+        </div>
+		<div class="field row">
+			<label style="float:left" for="labelPmd" data-i18n="settings.pmd"></label>
+			<div style="float:left">
+				<input type="text" id="labelPmd" name="label[pmd]" />
+			</div>
+        </div>
+		<div class="field row">
+			<label style="float:left" for="labelTextiel" data-i18n="settings.textile"></label>
+			<div style="float:left">
+				<input type="text" id="labelTextiel" name="label[textiel]" />
+			</div>
+        </div>
+		<div class="field row">
+			<label style="float:left" for="labelNone" data-i18n="settings.none"></label>
+			<div style="float:left">
+				<input type="text" id="labelNone" name="label[none]" />
+			</div>
+        </div>
+	</fieldset>
+	<button id="labelInput" class="left" style="display:block" data-i18n="settings.saveLabelInput" ></button>
+	<br /><br />
+	
 	<script type="text/javascript">
 
         function onHomeyReady( Homey )
@@ -299,6 +358,11 @@
 			document.getElementById("manualInput").addEventListener("click", function(elem)
 			{
 				saveManualInput( Homey );
+				return false; // cancels save event! (we don't need the real button event to be handled).
+			});
+			document.getElementById("labelInput").addEventListener("click", function(elem)
+			{
+				saveLabelInput( Homey );
 				return false; // cancels save event! (we don't need the real button event to be handled).
 			});
 			document.getElementById("gft_option").addEventListener("change", function(elem) { ToggleManualInputFields("gft"); });
@@ -407,6 +471,83 @@
 				});
 			});
 
+			Homey.get('labelSettings', function(err, labelSettings)
+			{
+				console.log(labelSettings);
+				if(err) 
+				{
+						return console.error(err);
+				}
+				
+				if(typeof labelSettings.timeindicator !== 'undefined')
+				{
+					document.getElementById("labelTimeIndicator").value = labelSettings.timeindicator;
+				}
+				
+				if(typeof labelSettings.type.gft !== 'undefined')
+				{
+					SetLabelEntryFormValues(Homey, labelSettings.type.gft, "gft");
+				}
+				else
+				{
+					SetLabelEntryFormValues(Homey, Homey.__('settings.gft'), "gft");
+				}
+
+				if(typeof labelSettings.type.papier !== 'undefined')
+				{
+					SetLabelEntryFormValues(Homey, labelSettings.type.papier, "papier");
+				}
+				else
+				{
+					SetLabelEntryFormValues(Homey, Homey.__('settings.paper'), "papier");
+				}
+
+				if(typeof labelSettings.type.rest !== 'undefined')
+				{
+					SetLabelEntryFormValues(Homey, labelSettings.type.rest, "rest");
+				}
+				else
+				{
+					SetLabelEntryFormValues(Homey, Homey.__('settings.rest'), "rest");
+				}
+
+				if(typeof labelSettings.type.plastic !== 'undefined')
+				{
+					SetLabelEntryFormValues(Homey, labelSettings.type.plastic, "plastic");
+				}
+				else
+				{
+					SetLabelEntryFormValues(Homey.__('settings.plastic'), "plastic");
+				}
+
+				if(typeof labelSettings.type.pmd !== 'undefined')
+				{
+					SetLabelEntryFormValues(Homey, labelSettings.type.pmd, "pmd");
+				}
+				else
+				{
+					SetLabelEntryFormValues(Homey, Homey.__('settings.pmd'), "pmd");
+				}
+
+				if(typeof labelSettings.type.textiel !== 'undefined')
+				{
+					SetLabelEntryFormValues(Homey, labelSettings.type.textiel, "textiel");
+				}
+				else
+				{
+					SetLabelEntryFormValues(Homey, Homey.__('settings.textile'), "textiel");
+				}
+
+				if(typeof labelSettings.type.none !== 'undefined')
+				{
+					SetLabelEntryFormValues(Homey, labelSettings.type.none, "none");
+				}
+				else
+				{
+					SetLabelEntryFormValues(Homey, Homey.__('settings.none'), "none");
+				}
+			});
+			
 			Homey.ready();
 		}
 
@@ -478,6 +619,26 @@
 			Homey.set('manualEntryData', data);
 		}
 
+		// Saves label values into Homey settings
+		function saveLabelInput( Homey )
+		{
+			var data = {
+				timeindicator: document.getElementById("labelTimeIndicator").value,
+				type: {
+					gft: document.getElementById("labelGft").value,
+					rest: document.getElementById("labelRest").value,
+					pmd: document.getElementById("labelPmd").value,
+					plastic: document.getElementById("labelPlastic").value,
+					papier: document.getElementById("labelPapier").value,
+					textiel: document.getElementById("labelTextiel").value,
+					none: document.getElementById("labelNone").value
+				}
+			};
+
+			console.log(data);
+			Homey.set('labelSettings', data);
+		}
+		
 		// Sets values given in "values" to the given "type" on the form.
 		function SetManualEntryFormValues(values, type)
 		{
@@ -491,6 +652,20 @@
 			}
 
 			ToggleManualInputFields(type);
+		}
+		
+		function capitalizeFirstLetter(string) {
+			return string.charAt(0).toUpperCase() + string.slice(1);
+		}
+		
+		// Sets values given in "values" to the given "type" on the form.
+		function SetLabelEntryFormValues(Homey, values, type)
+		{
+			var startText = Homey.__('speech.output.type.' + type.toUpperCase());
+			var endText = Homey.__('settings.labelplaceholder');
+			
+			document.getElementById("label" + capitalizeFirstLetter(type)).value = values;
+			document.getElementById("label" + capitalizeFirstLetter(type)).placeholder = startText + " " + endText;
 		}
 
 		// Retrieves all manual values from the form based on given "type" and adds them to the "data" element.

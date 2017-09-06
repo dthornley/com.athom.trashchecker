@@ -16,10 +16,12 @@
 		"pmd": "PMD",
 		"paper": "Paper",
 		"textile": "Textile",
+		"none": "When nothing is collected",
 		"titlemanualinput": "Manual input",
 		"manualInputField": "Enter dates manually?",
 		"manualInputFieldDescription": "Yes, enter them manually",
 		"saveManualInput": "Save manual input",
+		"saveLabelInput": "Save label input",
 		"interval":
 		{
 			"na": "N/A",
@@ -48,7 +50,11 @@
 			"quarter": "of the quarter",
 			"year": "of the year"
 		},
-		"startdate": "starting on"
+		"startdate": "starting on",
+		"labeltitle": "Global tag settings",
+		"labeldescription": "These values are set in the global tag when a specific type of trash is collected today/tomorrow/the day after tomorrow.",
+		"labelplaceholder": "is collected today",
+		"timeindicator": "Type collected"
 	},
 	"speech":
 	{
@@ -100,7 +106,8 @@
 				"PLASTIC": "The plastic waste",
 				"PMD": "The plastics, metal and drinking carton",
 				"PAPIER": "The paper",
-				"TEXTIEL": "The textile"
+				"TEXTIEL": "The textile",
+				"NONE": "Nothing"
 			},
 			"weekdays":
 			{
@@ -127,5 +134,9 @@
 			"addviasettings": "No dates known for this type of trash. Add them manually via the settings page of the app.",
 			"onyouraddress": "This type of trash is not supported on your address."
 		}
+	},
+	"tokens":
+	{
+		"trashcollection": "Collected"
 	}
 }

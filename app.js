@@ -14,9 +14,10 @@ class TrashcanReminder extends Homey.App
 	{
 		this.manualInput = false;
 		this.gdates = '';
-		
+		this.trashToken = null;
+				
 		// Update manual input dates when settings change.
-		Homey.on('settings.set', this.onSettingsChanged.bind(this));
+		Homey.ManagerSettings.on('set', this.onSettingsChanged.bind(this));
 		
 		// Register flow card
 		let daysToCollect = new Homey.FlowCardCondition('days_to_collect');
@@ -40,6 +41,24 @@ class TrashcanReminder extends Homey.App
 		
 		// Every 24 hours update API or manual dates
 		setInterval(this.onUpdateData.bind(this), 86400000); // Every 24-hours
+		
+		// Make sure the label is updated every 24 hours at midnight
+		let trashCollectionToken = new Homey.FlowToken( 'trash_collection_token', {
+			type: 'string',
+			title: Homey.__('tokens.trashcollection')
+		});
+		
+		trashCollectionToken
+			.register()
+			.then(() => {
+				this.trashToken = trashCollectionToken;
+				return this.onUpdateLabel ( trashCollectionToken );
+			})
+			.catch( err => {
+				this.error( err );
+			});
+			
+		this.updateLabel ( false, true );
 		
 		this.log("App initialized");
 	}
@@ -377,12 +396,13 @@ class TrashcanReminder extends Homey.App
 	********************/
 	onSettingsChanged(parameterName)
 	{
-		if(parameterName !== "manualEntryData")
+		if(parameterName === "manualEntryData")
 		{
-			return;
+			this.GenerateNewDaysBasedOnManualInput();
 		}
 		
-		this.GenerateNewDaysBasedOnManualInput();
+		console.log("HELLO, IT'S ME?!");
+		this.updateLabel( true , false );
 	}
 	
 	onUpdateData()
@@ -416,9 +436,110 @@ class TrashcanReminder extends Homey.App
 		}
 	}
 	
+	onUpdateLabel( trashCollectionToken )
+	{
+		// Retrieve label settings
+		var labelSettings = Homey.ManagerSettings.get('labelSettings');
+		
+		if(labelSettings === 'undefined' || labelSettings == null)
+		{
+			labelSettings = {
+				timeindicator: 0,
+				type: {
+					gft: Homey.__('speech.output.type.GFT') + " " + Homey.__('settings.labelplaceholder'),
+					rest: Homey.__('speech.output.type.REST') + " " + Homey.__('settings.labelplaceholder'),
+					pmd: Homey.__('speech.output.type.PMD') + " " + Homey.__('settings.labelplaceholder'),
+					plastic: Homey.__('speech.output.type.PLASTIC') + " " + Homey.__('settings.labelplaceholder'),
+					papier: Homey.__('speech.output.type.PAPIER') + " " + Homey.__('settings.labelplaceholder'),
+					textiel: Homey.__('speech.output.type.TEXTIEL') + " " + Homey.__('settings.labelplaceholder'),
+					none: Homey.__('speech.output.type.NONE') + " " + Homey.__('settings.labelplaceholder')
+				}
+			};
+			
+			// Fill default label settings
+			Homey.ManagerSettings.set('labelSettings', labelSettings);
+		}
+		
+		var checkDate = new Date();
+		if(labelSettings.timeindicator == 1) {
+			checkDate.setDate(checkDate.getDate() + 1);
+		} else if(labelSettings.timeindicator == 2) {
+			checkDate.setDate(checkDate.getDate() + 2);
+		}
+		
+		// Check trash type that is collected on x-day
+		var typeCollected = null;
+		var textLabel = "";
+		for (var i = 0, len = supportedTypes.length; i < len; i++) {
+			if( typeof this.gdates[ supportedTypes[i] ] !== 'undefined' )
+			{
+				if(this.gdates[ supportedTypes[i] ].indexOf(this.dateToString(checkDate)) > -1)
+				{
+					typeCollected = supportedTypes[i];
+				}
+			}
+		}
+		
+		if(typeof typeCollected === 'undefined' || typeCollected === null)
+		{
+			typeCollected = "NONE";
+		}
+		
+		// Find sentence
+		if(typeof labelSettings.type[typeCollected.toLowerCase()] !== 'undefined')
+		{
+			textLabel = labelSettings.type[typeCollected.toLowerCase()];
+		}
+		
+		// Set global token with value found.
+		if(trashCollectionToken !== null)
+		{
+			console.log("Label is really updated!");
+			return trashCollectionToken.setValue(textLabel);
+		}
+		else
+		{
+			console.log("Trash token is empty");
+		}
+	}
+	
 	/* ******************
 		COMMON FUNCTIONS
 	********************/
+	updateLabel ( shouldExecute, shouldSetTimeout )
+	{	
+		console.log("Updating label");
+	
+		if( shouldExecute === true)
+		{
+			console.log("Executing update label");
+			
+			let result = this.onUpdateLabel ( this.trashToken );
+			if(typeof result !== 'undefined')
+			{
+				console.log("yay a result?!");
+				result.resolve();
+			}
+		}
+	
+		// Make sure it is executed every day at midnight (+1 sec)
+		var now = new Date();
+		var night = new Date(
+			now.getFullYear(),
+			now.getMonth(),
+			now.getDate() + 1,
+			0, 0, 1
+		);
+		
+		let msTillMidnight = night.getTime() - now.getTime();		
+		if(shouldSetTimeout === true)
+		{
+			//let timeout = setTimeout( (this.updateLabel( true , true ).bind(this)), msTillMidnight);
+		}
+		
+		//return timeout;
+	}
+	
 	pad(n, width, z)
 	{
 	  z = z || '0';

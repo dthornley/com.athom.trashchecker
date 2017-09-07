@@ -16,10 +16,12 @@
 		"pmd": "PMD",
 		"paper": "Papier",
 		"textile": "Textiel",
+		"none": "Er wordt niks opgehaald",
 		"titlemanualinput": "Handmatige invoer",
 		"manualInputField": "Voer ophaaldata handmatig in?",
 		"manualInputFieldDescription": "Ja, handmatig invoeren",
 		"saveManualInput": "Sla handmatige invoer op",
+		"saveLabelInput": "Sla invoer labels op",
 		"interval":
 		{
 			"na": "N.v.t.",
@@ -48,7 +50,11 @@
 			"quarter": "van het kwartaal",
 			"year": "van het jaar"
 		},
-		"startdate": "startend op"
+		"startdate": "startend op",
+		"labeltitle": "Instellingen voor globale tag",
+		"labeldescription": "Deze waarden worden getoond in de globale variabele op het moment dat het afval van dit type opgehaald wordt op deze dag (vandaag/morgen/overmorgen).",
+		"labelplaceholder": "wordt vandaag opgehaald.",
+		"timeindicator": "Wordt ... opgehaald"
 	},
 	"speech":
 	{
@@ -100,7 +106,8 @@
 				"PLASTIC": "De oranje container",
 				"PMD": "De plastic, metalen en drankcartons",
 				"PAPIER": "De blauwe container",
-				"TEXTIEL": "Het textiel"
+				"TEXTIEL": "Het textiel",
+				"NONE": "Niks"
 			},
 			"weekdays":
 			{

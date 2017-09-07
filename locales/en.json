@@ -54,7 +54,7 @@
 		"labeltitle": "Global tag settings",
 		"labeldescription": "These values are set in the global tag when a specific type of trash is collected today/tomorrow/the day after tomorrow.",
 		"labelplaceholder": "is collected today",
-		"timeindicator": "Type collected"
+		"timeindicator": "Is collected ..."
 	},
 	"speech":
 	{
